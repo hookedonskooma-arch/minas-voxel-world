@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Sparkles, Globe, Users, Map } from 'lucide-react';
+import { Home, Sparkles, Globe, Users, Map, Backpack } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/onboarding', label: 'Home', icon: Home },
   { href: '/studio', label: 'Avatar', icon: Sparkles },
   { href: '/worlds', label: 'Build', icon: Globe },
   { href: '/friends', label: 'Friends', icon: Users },
+  { href: '/inventory', label: 'Bag', icon: Backpack },
   { href: '/quests', label: 'Quests', icon: Map },
 ];
 

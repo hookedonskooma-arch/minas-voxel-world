@@ -541,9 +541,9 @@ p {
   margin-top: auto;
   min-height: 66px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  padding: 8px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 8px 6px;
   border-radius: 24px;
   background: color-mix(in oklch, white, var(--sky) 10%);
   border: 1px solid color-mix(in oklch, var(--border), white 28%);

@@ -1,32 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useGameStore } from '@/store/gameStore';
 import BottomNav from '@/components/BottomNav';
 
-interface QuestStep {
-  label: string;
-  status: 'done' | 'next' | 'locked';
-}
-
-const QUEST_STEPS: QuestStep[] = [
-  { label: 'Add soft trees', status: 'done' },
-  { label: 'Invite one approved friend', status: 'next' },
-  { label: 'Choose a garden name', status: 'locked' },
-];
-
-const STATUS_LABEL: Record<QuestStep['status'], string> = {
-  done: 'Done',
-  next: 'Next',
-  locked: 'Locked',
-};
-
 export default function QuestsPage() {
-  const [progress, setProgress] = useState(66);
+  const { activeQuest, placedObjects } = useGameStore();
 
-  const handleStepClick = (index: number) => {
-    if (QUEST_STEPS[index].status === 'next') {
-      setProgress((p) => Math.min(100, p + 17));
-    }
+  const treeCount = placedObjects.filter((o) => o.type === 'tree').length;
+  const progressPercent = Math.min(100, (treeCount / 3) * 100);
+
+  const steps = [
+    {
+      label: 'Add soft trees',
+      status: treeCount >= 3 ? 'done' : treeCount > 0 ? 'next' : 'locked',
+      detail: `${treeCount}/3 placed`,
+    },
+    {
+      label: 'Invite one approved friend',
+      status: 'next',
+      detail: 'Tap a friend in Friends tab',
+    },
+    {
+      label: 'Choose a garden name',
+      status: 'locked',
+      detail: 'Name your world in Builder',
+    },
+  ];
+
+  const STATUS_LABEL: Record<string, string> = {
+    done: 'Done',
+    next: 'Next',
+    locked: 'Locked',
   };
 
   return (
@@ -52,25 +56,29 @@ export default function QuestsPage() {
           <p style={{ marginTop: 9 }}>
             Earn a moon bow by placing three cozy objects and naming your garden.
           </p>
-          <div className="progress" style={{ marginTop: 14, ['--value' as string]: `${progress}%` }}>
+          <div className="progress" style={{ marginTop: 14, ['--value' as string]: `${progressPercent}%` }}>
             <span></span>
           </div>
+          <p style={{ marginTop: 6, fontSize: 12, fontWeight: 800, color: 'var(--muted)' }}>
+            {treeCount >= 3 ? '🎀 Quest complete! Check your inventory.' : `Place ${3 - treeCount} more tree${treeCount === 2 ? '' : 's'}`}
+          </p>
         </section>
 
         {/* Steps Panel */}
         <section className="panel">
           <h3>Steps</h3>
-          {QUEST_STEPS.map((step, i) => (
+          {steps.map((step) => (
             <div
               key={step.label}
               className="quest-row"
-              onClick={() => handleStepClick(i)}
               style={{
-                cursor: step.status === 'next' ? 'pointer' : 'default',
                 opacity: step.status === 'locked' ? 0.5 : 1,
               }}
             >
-              <span>{step.label}</span>
+              <div>
+                <span>{step.label}</span>
+                <p style={{ fontSize: 11, marginTop: 2 }}>{step.detail}</p>
+              </div>
               <span className="badge">{STATUS_LABEL[step.status]}</span>
             </div>
           ))}
@@ -91,8 +99,8 @@ export default function QuestsPage() {
             style={{ background: 'color-mix(in oklch, var(--star), white 40%)' }}
           >
             <span className="badge">Reward</span>
-            <strong>Bow</strong>
-            <p>Moon ribbon</p>
+            <strong>Moon Bow</strong>
+            <p>🎀 Complete the quest!</p>
           </article>
         </section>
 

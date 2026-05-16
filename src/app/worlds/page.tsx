@@ -2,33 +2,31 @@
 
 import { useState } from 'react';
 import { useWorldBuilderStore } from '@/store/worldBuilderStore';
+import { useGameStore } from '@/store/gameStore';
 import BottomNav from '@/components/BottomNav';
-import { BIOME_OPTIONS, TILESET_COLORS } from '@/types/world';
+import GameWorld from '@/components/GameWorld';
+import VirtualDpad from '@/components/VirtualDpad';
 import ChatPanel from '@/components/ChatPanel';
-import { useRealtimePresence } from '@/hooks/useRealtimePresence';
+import { BIOME_OPTIONS, TILESET_COLORS } from '@/types/world';
 
 const PIECES = [
-  { emoji: '🌳', label: 'Tree', color: '#10B981' },
-  { emoji: '🏠', label: 'House', color: '#8B5CF6' },
-  { emoji: '🌸', label: 'Flower', color: '#EC4899' },
-  { emoji: '🍰', label: 'Cafe', color: '#F59E0B' },
+  { emoji: '🌳', label: 'Tree', type: 'tree', color: '#10B981' },
+  { emoji: '🏠', label: 'House', type: 'house', color: '#8B5CF6' },
+  { emoji: '🌸', label: 'Flower', type: 'flower', color: '#EC4899' },
+  { emoji: '🍰', label: 'Cafe', type: 'cafe', color: '#F59E0B' },
+  { emoji: '☁️', label: 'Cloud', type: 'cloud', color: '#60A5FA' },
+  { emoji: '⭐', label: 'Star', type: 'star', color: '#FBBF24' },
 ];
 
 export default function WorldBuilderPage() {
-  const {
-    currentWorld,
-    selectedBiome,
-    createNewWorld,
-    updateTile,
-  } = useWorldBuilderStore();
+  const { currentWorld, selectedBiome, createNewWorld } = useWorldBuilderStore();
+  const { placedObjects, coins, activeQuest } = useGameStore();
 
   const [selectedPiece, setSelectedPiece] = useState(PIECES[0]);
   const [worldName, setWorldName] = useState('Cloud Plaza');
+  const [showNewWorld, setShowNewWorld] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [showNewWorld, setShowNewWorld] = useState(false);
-
-  const tileColors = TILESET_COLORS[selectedBiome];
 
   const handleCreate = () => {
     if (!worldName.trim()) return;
@@ -61,14 +59,8 @@ export default function WorldBuilderPage() {
     }
   };
 
-  const handleTileClick = (x: number, y: number) => {
-    if (!currentWorld?.tileMap) return;
-    const colorIndex = tileColors.indexOf(selectedPiece.color);
-    updateTile('ground', x, y, colorIndex >= 0 ? colorIndex : 0);
-  };
-
-  const tiles = currentWorld?.tileMap?.layers.find((l) => l.id === 'ground')?.tiles || [];
-  const { visitors, isConnected } = useRealtimePresence(currentWorld?.id || 'default');
+  const treeCount = placedObjects.filter((o) => o.type === 'tree').length;
+  const progressPercent = Math.min(100, (treeCount / 3) * 100);
 
   return (
     <div className="phone-screen">
@@ -82,11 +74,9 @@ export default function WorldBuilderPage() {
         <nav className="topbar">
           <span className="avatar-chip">{currentWorld?.name || 'New World'}</span>
           <div className="button-row" style={{ alignItems: 'center', gap: 8 }}>
-            {visitors.length > 0 && (
-              <span className="badge" style={{ fontSize: 11 }}>
-                {visitors.length} visiting
-              </span>
-            )}
+            <span className="badge" style={{ fontSize: 11 }}>
+              ⭐ {coins}
+            </span>
             <button className="icon-btn" onClick={() => setShowNewWorld(true)} aria-label="New world">
               +
             </button>
@@ -96,49 +86,39 @@ export default function WorldBuilderPage() {
           </div>
         </nav>
 
-        {/* World Card */}
-        <section className="world-card">
-          <div className="topbar">
+        {/* Quest Progress Mini */}
+        {activeQuest && !activeQuest.completed && (
+          <section className="mini-card" style={{ padding: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 800 }}>🎯 Place {Math.max(0, 3 - treeCount)} more tree{treeCount === 2 ? '' : 's'}</span>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{treeCount}/3</span>
+            </div>
+            <div className="progress" style={{ marginTop: 6, ['--value' as string]: `${progressPercent}%` }}>
+              <span></span>
+            </div>
+          </section>
+        )}
+
+        {/* Game World */}
+        <section className="world-card" style={{ padding: 12 }}>
+          <div className="topbar" style={{ marginBottom: 8 }}>
             <div>
               <p className="kicker">Builder</p>
-              <h2>Decorate the park</h2>
+              <h2>Walk and decorate</h2>
             </div>
-            <span className="badge">68%</span>
+            <span className="badge">{placedObjects.length} objects</span>
           </div>
 
-          {/* Tile Grid */}
-          {currentWorld ? (
-            <div className="world-grid" style={{ marginTop: 14 }}>
-              {tiles.flatMap((row, y) =>
-                row.map((tileIndex, x) => {
-                  const color = tileIndex !== null ? tileColors[tileIndex % tileColors.length] : 'white';
-                  return (
-                    <button
-                      key={`${x}-${y}`}
-                      className="tile"
-                      style={{ '--tile': color } as React.CSSProperties}
-                      onClick={() => handleTileClick(x, y)}
-                    >
-                      {tileIndex !== null ? selectedPiece.emoji : '+'}
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          ) : (
-            <div
-              className="world-grid"
-              style={{ marginTop: 14, minHeight: 200, display: 'grid', placeItems: 'center' }}
-            >
-              <p style={{ gridColumn: '1 / -1' }}>Tap + to create a world</p>
-            </div>
-          )}
+          <GameWorld selectedEmoji={selectedPiece.emoji} selectedType={selectedPiece.type} />
         </section>
 
         {/* Piece Picker */}
         <section className="panel">
           <h3>Place a piece</h3>
-          <div className="preset-row" style={{ marginTop: 12 }}>
+          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+            Tap tiles next to your avatar to place
+          </p>
+          <div className="preset-row" style={{ marginTop: 10 }}>
             {PIECES.map((piece) => (
               <button
                 key={piece.label}
@@ -151,16 +131,13 @@ export default function WorldBuilderPage() {
           </div>
         </section>
 
-        {/* Parent Note */}
-        <section className="mini-card">
-          <span className="badge">Parent note</span>
-          <p style={{ marginTop: 8 }}>Worlds are private until a parent approves sharing.</p>
-        </section>
-
+        {/* Chat */}
         <ChatPanel />
 
         <BottomNav />
       </main>
+
+      <VirtualDpad />
 
       {/* New World Modal */}
       {showNewWorld && (
@@ -192,9 +169,6 @@ export default function WorldBuilderPage() {
                 <button
                   key={biome.id}
                   className="preset"
-                  onClick={() => {
-                    // biome selection handled by store on create
-                  }}
                   style={{ fontSize: 12 }}
                 >
                   {biome.icon} {biome.label}
