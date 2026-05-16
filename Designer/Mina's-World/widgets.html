@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mina's World - iOS Widgets</title>
+  <link rel="stylesheet" href="styles/mina-world.css">
+  <style>
+    .widgets-page { max-width: 1040px; margin: 0 auto; padding: 42px 22px 70px; }
+    .widget-grid { margin-top: 30px; display: grid; grid-template-columns: 340px 340px minmax(240px, 1fr); gap: 18px; align-items: start; }
+    .ios-widget { border-radius: 34px; padding: 20px; min-height: 172px; background: linear-gradient(145deg, color-mix(in oklch, white, var(--bubble) 24%), color-mix(in oklch, white, var(--sky) 26%)); box-shadow: 0 18px 48px color-mix(in oklch, var(--violet), black 18%); border: 1px solid color-mix(in oklch, white, var(--border) 55%); }
+    .ios-widget.large { min-height: 340px; display: flex; flex-direction: column; justify-content: space-between; }
+    .ios-widget.lock { width: 196px; min-height: 92px; border-radius: 28px; padding: 14px 16px; background: color-mix(in oklch, var(--fg), black 14%); color: white; }
+    .ios-widget.lock p, .ios-widget.lock .kicker { color: color-mix(in oklch, white, var(--sky) 26%); }
+    .widget-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
+    .widget-actions button { min-height: 40px; border-radius: 15px; border: 0; font-weight: 900; background: white; color: var(--fg); }
+    .large .world-grid { transform: scale(.92); transform-origin: left top; }
+    @media (max-width: 980px) { .widget-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="widgets-page">
+    <a class="mw-logo" data-mw-logo href="landing.html" aria-label="Mina's World" style="height:64px;margin-bottom:18px;"></a>
+    <p class="kicker">iOS quick-access surfaces</p>
+    <h1 style="max-width:12ch;">Widgets that keep play safe and moving.</h1>
+    <p style="margin-top:16px;max-width:62ch;">These are outside-the-app surfaces: a Home Screen quest widget for kids, a parent safety glance, and a Lock Screen friend invite approval.</p>
+
+    <section class="widget-grid">
+      <article class="ios-widget large">
+        <div>
+          <span class="badge">Today's quest</span>
+          <h2 style="margin-top:12px;">Cloud Garden</h2>
+          <p>Place two cozy objects and invite one approved friend.</p>
+        </div>
+        <div class="world-grid" aria-hidden="true">
+          <span class="tile" style="--tile:var(--mint);">🌳</span><span class="tile">+</span><span class="tile" style="--tile:var(--sky);">☁</span>
+          <span class="tile" style="--tile:var(--bubble);">🌸</span><span class="tile">+</span><span class="tile" style="--tile:var(--star);">⭐</span>
+        </div>
+        <div class="widget-actions"><button>Open quest</button><button>Add tree</button></div>
+      </article>
+
+      <article class="ios-widget large" style="background:linear-gradient(145deg,color-mix(in oklch,white,var(--mint) 30%),white);">
+        <div>
+          <span class="badge">Parent glance</span>
+          <h2 style="margin-top:12px;">Safe mode is on</h2>
+          <p>Friend visits require approval. Free text chat is off.</p>
+        </div>
+        <div>
+          <div class="safety-row"><span>Play timer</span><strong>20 min</strong></div>
+          <div class="safety-row"><span>Sharing</span><strong>Friends only</strong></div>
+          <div class="safety-row"><span>Pending</span><strong>1 invite</strong></div>
+        </div>
+        <div class="widget-actions"><button>Approve</button><button>Review</button></div>
+      </article>
+
+      <article>
+        <div class="ios-widget lock">
+          <p class="kicker">Mina's World</p>
+          <h3>Lulu wants to visit</h3>
+          <p>Approve 20 min playdate</p>
+        </div>
+        <div class="ios-widget" style="margin-top:18px;min-height:220px;">
+          <span class="badge">Live Activity</span>
+          <h2 style="margin-top:12px;">Cloud Plaza build</h2>
+          <p>68% decorated</p>
+          <div class="progress" style="margin-top:18px;--value:68%;"><span></span></div>
+          <div class="widget-actions"><button>Open app</button><button>Pause</button></div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script>
+    // Inline the shared brand logo so the puffy wordmark font renders.
+    fetch("assets/mina-world-logo.svg")
+      .then((r) => r.text())
+      .then((svg) => document.querySelectorAll("[data-mw-logo]").forEach((el) => { el.innerHTML = svg; }));
+  </script>
+</body>
+</html>

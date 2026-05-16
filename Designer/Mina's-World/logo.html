@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mina's World — Logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbf3fb; --surface:#ffffff; --ink:#3a2a3e; --muted:#8a7795;
+    --lav:#b596ec; --pink:#ff8fc4; --magenta:#d12878; --sky1:#fde6f4; --sky2:#e6e2ff; --sky3:#def6ef;
+  }
+  *{box-sizing:border-box;margin:0;}
+  body{
+    font-family:'Baloo 2',system-ui,sans-serif; background:var(--bg); color:var(--ink);
+    padding:48px 24px 90px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+  .eyebrow{font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--lav);}
+  h1{font-size:34px;font-weight:800;margin:6px 0 4px;}
+  .lead{color:var(--muted);font-size:16px;font-weight:500;max-width:54ch;}
+  .grid{display:grid;gap:22px;margin-top:34px;}
+  .card{
+    background:var(--surface);border-radius:30px;padding:30px;
+    box-shadow:0 18px 48px -22px rgba(140,90,170,.55);
+  }
+  .card h2{font-size:15px;font-weight:800;letter-spacing:.01em;}
+  .card p{font-size:13.5px;color:var(--muted);font-weight:500;margin-top:3px;}
+  .stage{
+    margin-top:18px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+    padding:30px;min-height:300px;
+  }
+  .sky{background:linear-gradient(150deg,var(--sky1),var(--sky2) 55%,var(--sky3));}
+  .plain{background:#ffffff;border:2px dashed #ecdcf3;}
+  .ink{background:linear-gradient(150deg,#d12878,#b03cc8);}
+  .stage svg{width:100%;max-width:560px;height:auto;display:block;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .iconrow{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:18px;}
+  .appicon{width:128px;height:128px;border-radius:30px;overflow:hidden;box-shadow:0 12px 30px -10px rgba(150,70,160,.6);}
+  .appicon.sm{width:72px;height:72px;border-radius:18px;}
+  .appicon svg{width:100%;height:100%;display:block;}
+  .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .sw{width:62px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);}
+  .sw i{display:block;height:46px;border-radius:12px;margin-bottom:5px;border:1px solid rgba(0,0,0,.05);}
+  .dl{display:inline-flex;gap:8px;align-items:center;margin-top:18px;text-decoration:none;
+    background:var(--lav);color:#fff;font-weight:800;font-size:13px;padding:11px 18px;border-radius:14px;}
+  .specs{font-size:13px;color:var(--muted);font-weight:500;line-height:1.7;}
+  .specs b{color:var(--ink);font-weight:800;}
+  @media(max-width:680px){.row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Brand mark</p>
+  <h1>Mina's World logo 🌟</h1>
+  <p class="lead">A puffy cloud wordmark with a cute anime Mina sitting on top of the letters, facing forward — black bob with a bleached-blonde front streak, pink bow, and her signature magenta top, matching the in-app avatar exactly.</p>
+
+  <div class="grid">
+    <!-- primary lockup -->
+    <section class="card">
+      <h2>Primary lockup</h2>
+      <p>Full-color mark on a soft kawaii sky. Use for splash screens, the landing hero, and store art.</p>
+      <div class="stage sky" id="heroStage"></div>
+      <a class="dl" href="assets/mina-world-logo.svg" download>⬇ Download SVG</a>
+    </section>
+
+    <div class="row">
+      <!-- on white -->
+      <section class="card">
+        <h2>On white</h2>
+        <p>Same mark on a plain surface — for documents, decks, and partner handoffs.</p>
+        <div class="stage plain" id="plainStage"></div>
+      </section>
+      <!-- app icon -->
+      <section class="card">
+        <h2>App icon</h2>
+        <p>Cropped cute Mina on a candy gradient — rounded-square iOS icon.</p>
+        <div class="iconrow">
+          <div class="appicon" id="icon1"></div>
+          <div class="appicon sm" id="icon2"></div>
+          <span class="specs">1024×1024<br>safe-area centered</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- system -->
+    <section class="card">
+      <h2>Logo system</h2>
+      <p>Tokens baked into the mark so it stays consistent across the app, widgets, and marketing.</p>
+      <div class="swatches">
+        <div class="sw"><i style="background:#b596ec"></i>Lavender outline</div>
+        <div class="sw"><i style="background:#ff8fc4"></i>Bow pink</div>
+        <div class="sw"><i style="background:#d12878"></i>Mina magenta</div>
+        <div class="sw"><i style="background:#1f1611"></i>Hair</div>
+        <div class="sw"><i style="background:#f0e4a8"></i>Streak</div>
+        <div class="sw"><i style="background:#f7e3d0"></i>Skin</div>
+      </div>
+      <p class="specs" style="margin-top:16px;">
+        <b>Wordmark:</b> Baloo 2 ExtraBold, two stacked words, white fill + 21–23px lavender outline, soft drop shadow for the puffy cloud feel.<br>
+        <b>Character:</b> forward-facing cute Mina — big sparkly eyes, rosy blush, face-framing bob with a bleached-blonde front streak; matches the avatar creator exactly.<br>
+        <b>Clear space:</b> keep one bow-width of padding on every side. Minimum width 96px.
+      </p>
+    </section>
+  </div>
+</div>
+
+<script>
+// Single source of truth — load the SVG logo file and inline it so the embedded font renders.
+fetch('assets/mina-world-logo.svg')
+  .then((r) => r.text())
+  .then((svg) => {
+    document.getElementById('heroStage').innerHTML = svg;
+    document.getElementById('plainStage').innerHTML = svg;
+  });
+
+// App icon: a cropped, forward-facing Mina that matches the avatar — face, streak, bow.
+const ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Mina's World app icon">
+  <defs>
+    <linearGradient id="icBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd3ec"/><stop offset="0.5" stop-color="#e7d8ff"/><stop offset="1" stop-color="#c9ecff"/>
+    </linearGradient>
+    <linearGradient id="icHair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a2a22"/><stop offset="1" stop-color="#1f1611"/>
+    </linearGradient>
+    <linearGradient id="icShirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e23b8d"/><stop offset="1" stop-color="#bf2270"/>
+    </linearGradient>
+    <clipPath id="icClip"><rect width="1024" height="1024" rx="232"/></clipPath>
+  </defs>
+  <g clip-path="url(#icClip)">
+    <rect width="1024" height="1024" fill="url(#icBg)"/>
+    <circle cx="206" cy="250" r="46" fill="#ffffff" opacity="0.7"/>
+    <circle cx="852" cy="214" r="34" fill="#ffffff" opacity="0.7"/>
+    <g transform="translate(512,520) scale(2.55) translate(-600,-200)">
+      <path d="M600 298 C546 298 518 314 514 354 L510 394 C508 412 522 422 540 422 L660 422 C678 422 692 412 690 394 L686 354 C682 314 654 298 600 298 Z" fill="url(#icShirt)"/>
+      <ellipse cx="600" cy="190" rx="128" ry="138" fill="url(#icHair)"/>
+      <ellipse cx="600" cy="214" rx="96" ry="100" fill="#f7e3d0" stroke="#eccdb4" stroke-width="2"/>
+      <path d="M506 150 C506 112 694 112 694 150 C694 178 678 190 662 174 C652 196 624 196 614 176 C606 196 578 196 570 176 C558 192 532 190 522 172 C512 186 506 178 506 150 Z" fill="url(#icHair)"/>
+      <path d="M508 152 C508 122 560 112 568 118 C557 132 552 150 551 172 C549 188 532 190 523 175 C515 184 509 176 508 152 Z" fill="#f0e4a8"/>
+      <path d="M524 132 C513 144 510 158 511 170" fill="none" stroke="#f9f1cc" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="566" cy="222" rx="23" ry="29" fill="#2c4f87"/>
+      <ellipse cx="634" cy="222" rx="23" ry="29" fill="#2c4f87"/>
+      <ellipse cx="566" cy="237" rx="15" ry="8" fill="#5377ad"/>
+      <ellipse cx="634" cy="237" rx="15" ry="8" fill="#5377ad"/>
+      <circle cx="576" cy="212" r="8" fill="#ffffff"/>
+      <circle cx="644" cy="212" r="8" fill="#ffffff"/>
+      <circle cx="558" cy="232" r="4.5" fill="#ffffff" opacity="0.7"/>
+      <circle cx="626" cy="232" r="4.5" fill="#ffffff" opacity="0.7"/>
+      <ellipse cx="538" cy="250" rx="22" ry="12" fill="#f3bdce" opacity="0.9"/>
+      <ellipse cx="662" cy="250" rx="22" ry="12" fill="#f3bdce" opacity="0.9"/>
+      <path d="M588 257 C593 269 607 269 612 257" fill="none" stroke="#d77f6b" stroke-width="6" stroke-linecap="round"/>
+      <path d="M600 90 C560 66 538 86 548 108 C556 124 588 106 600 98 Z" fill="#ff8fc4"/>
+      <path d="M600 90 C640 66 662 86 652 108 C644 124 612 106 600 98 Z" fill="#ff8fc4"/>
+      <circle cx="600" cy="93" r="14" fill="#ff6fb0"/>
+      <circle cx="595" cy="89" r="4.5" fill="#ffd0e6"/>
+    </g>
+  </g>
+</svg>`;
+document.getElementById('icon1').innerHTML = ICON;
+document.getElementById('icon2').innerHTML = ICON;
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-05-16T03:41:19Z",
+  "generatedBy": "agent",
+  "notes": "Initial high-fidelity iOS prototype, landing companion, and iOS widget surfaces created from user-provided Mina's World brief with compact sample preview data for later refresh.",
+  "sources": [
+    {
+      "label": "User brief",
+      "type": "user_input",
+      "ref": "Mina's World creative sandbox for kids age 8-12"
+    },
+    {
+      "label": "Discovery answers",
+      "type": "user_input",
+      "ref": "Avatar creator, friend visit, world builder, quest map, onboarding, sample data, kawaii parent-trust tone, iOS widgets"
+    },
+    {
+      "label": "Preview data",
+      "type": "local_file",
+      "ref": "data.json"
+    },
+    {
+      "label": "Design derivation",
+      "type": "derived",
+      "ref": "Human-approachable direction adapted to kawaii kids-game UI"
+    }
+  ]
+}

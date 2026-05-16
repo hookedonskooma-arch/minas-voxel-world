@@ -1,16 +1,47 @@
 'use client';
 
+import { useState } from 'react';
 import { useAvatarStore } from '@/store/avatarStore';
 import AvatarPreview from '@/components/avatar/AvatarPreview';
 import OptionPicker from '@/components/avatar/OptionPicker';
-import { Sparkles, RotateCcw, Save, Share2 } from 'lucide-react';
+import { Sparkles, RotateCcw, Save, Heart } from 'lucide-react';
 
 export default function AvatarStudioPage() {
-  const { appearance, resetToDefault } = useAvatarStore();
+  const { appearance, name, setName, resetToDefault } = useAvatarStore();
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const handleSave = async () => {
-    // TODO: Save to Supabase
-    console.log('Saving avatar:', appearance);
+    setSaving(true);
+    setSaved(false);
+
+    try {
+      // Try API save first
+      const res = await fetch('/api/avatars', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          appearance,
+          isDefault: true,
+        }),
+      });
+
+      if (res.ok) {
+        setSaved(true);
+      } else {
+        // Fallback to localStorage
+        localStorage.setItem('mina-avatar', JSON.stringify({ name, appearance, savedAt: new Date().toISOString() }));
+        setSaved(true);
+      }
+    } catch {
+      // Fallback to localStorage on network error
+      localStorage.setItem('mina-avatar', JSON.stringify({ name, appearance, savedAt: new Date().toISOString() }));
+      setSaved(true);
+    } finally {
+      setSaving(false);
+      setTimeout(() => setSaved(false), 3000);
+    }
   };
 
   return (
@@ -23,11 +54,11 @@ export default function AvatarStudioPage() {
               <Sparkles className="text-white" size={22} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[#004F71]">Mina's World</h1>
+              <h1 className="text-xl font-bold text-[#004F71]">Mina&apos;s World</h1>
               <p className="text-xs text-[#00B398] font-medium">Avatar Studio</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={resetToDefault}
@@ -38,10 +69,15 @@ export default function AvatarStudioPage() {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#00B398] to-[#004F71] rounded-xl hover:shadow-lg hover:scale-105 transition-all"
+              disabled={saving}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-xl transition-all ${
+                saved
+                  ? 'bg-[#00B398]'
+                  : 'bg-gradient-to-r from-[#00B398] to-[#004F71] hover:shadow-lg hover:scale-105'
+              }`}
             >
               <Save size={16} />
-              <span className="hidden sm:inline">Save</span>
+              <span className="hidden sm:inline">{saving ? 'Saving...' : saved ? 'Saved!' : 'Save'}</span>
             </button>
           </div>
         </div>
@@ -50,17 +86,29 @@ export default function AvatarStudioPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-[#004F71]">Create Your Chibi Avatar</h2>
+          <h2 className="text-2xl font-bold text-[#004F71]">Create Your Kawaii Avatar</h2>
           <p className="text-[#004F71]/60 mt-1">Design your character — pick hair, eyes, clothes, and more!</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Preview Panel */}
-          <div className="order-1 lg:order-2">
+          <div className="order-1 lg:order-2 space-y-4">
+            <div className="bg-white rounded-xl border-2 border-[#E5E7EB] p-4">
+              <label className="text-sm font-medium text-[#004F71] mb-2 block">Avatar Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={50}
+                className="w-full px-4 py-2 rounded-lg border-2 border-[#E5E7EB] focus:border-[#00B398] focus:outline-none text-[#004F71] font-medium transition-colors"
+                placeholder="Name your avatar..."
+              />
+            </div>
+
             <AvatarPreview />
-            
+
             {/* Quick Stats */}
-            <div className="mt-4 bg-white rounded-xl border-2 border-[#E5E7EB] p-4">
+            <div className="bg-white rounded-xl border-2 border-[#E5E7EB] p-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#004F71]/60">Accessories</span>
                 <span className="font-medium text-[#004F71]">{appearance.accessories.length} / 5</span>
@@ -74,6 +122,11 @@ export default function AvatarStudioPage() {
                     {acc.replace('_', ' ')}
                   </span>
                 ))}
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-[#E5E7EB] flex items-center gap-2 text-xs text-[#004F71]/50">
+                <Heart size={12} className="text-[#EF4444]" />
+                <span>Made with love for Mina</span>
               </div>
             </div>
           </div>

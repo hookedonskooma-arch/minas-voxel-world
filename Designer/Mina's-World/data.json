@@ -1,0 +1,58 @@
+{
+  "artifact": {
+    "title": "Mina's World",
+    "subtitle": "A safe kawaii sandbox where kids design cute avatars, build tiny worlds, and visit friends.",
+    "audience": "Kids age 8-12 and parents who want visible safety controls",
+    "updatedLabel": "Sample preview data - refreshable later"
+  },
+  "screens": [
+    {
+      "label": "Onboarding",
+      "path": "../../screens/01-onboarding.html",
+      "description": "Choose a starter style, create a kid-safe profile, and enter Mina's first world."
+    },
+    {
+      "label": "Avatar Creator",
+      "path": "../../screens/02-avatar.html",
+      "description": "Customize cute hair, eyes, outfit, and accessories with parent-safe presets."
+    },
+    {
+      "label": "World Builder",
+      "path": "../../screens/03-world-builder.html",
+      "description": "Place houses, parks, shops, and decorations in a friendly drag-and-drop builder."
+    },
+    {
+      "label": "Friend Visit",
+      "path": "../../screens/04-friend-visit.html",
+      "description": "Visit approved friends, use canned chat, and explore together with guardian limits."
+    },
+    {
+      "label": "Quest Map",
+      "path": "../../screens/05-quest-map.html",
+      "description": "Follow daily creative quests and learning mini-games without pressure loops."
+    }
+  ],
+  "liveSnapshot": {
+    "activeKids": "3 approved friends online",
+    "dailyQuest": "Design a cloud garden",
+    "parentStatus": "All sharing set to friends-only",
+    "buildProgress": "Cloud Plaza is 68% decorated"
+  },
+  "widgets": [
+    {
+      "label": "Quest Widget",
+      "value": "Cloud Garden",
+      "detail": "2 steps left"
+    },
+    {
+      "label": "Parent Glance",
+      "value": "Safe mode on",
+      "detail": "Friend visits require approval"
+    },
+    {
+      "label": "Lock Invite",
+      "value": "Lulu is visiting",
+      "detail": "Approve 20 min playdate"
+    }
+  ]
+}

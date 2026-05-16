@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mina's World - Onboarding</title>
+  <link rel="stylesheet" href="../styles/mina-world.css">
+</head>
+<body class="phone-screen">
+  <div class="ios-status"><span>9:41</span><span>5G 100%</span></div>
+  <main class="app-shell">
+    <nav class="topbar">
+      <span class="avatar-chip">Mina</span>
+      <button class="icon-btn" aria-label="Parent safety">盾</button>
+    </nav>
+    <section class="hero-card">
+      <span class="mw-logo app-logo" data-mw-logo aria-label="Mina's World"></span>
+      <p class="kicker" style="text-align:center;">Welcome home</p>
+      <h1>Make your tiny world sparkle.</h1>
+      <p style="margin-top: 12px;">Pick a starter world, design your cutie, and invite only parent-approved friends.</p>
+      <div class="button-row" style="margin-top: 18px;">
+        <button class="primary-btn">Start creating</button>
+        <button class="secondary-btn">Parent setup</button>
+      </div>
+    </section>
+    <section class="grid-2">
+      <article class="mini-card" style="background:color-mix(in oklch, var(--bubble), white 54%);">
+        <span class="badge">Cute</span>
+        <strong>Avatar</strong>
+        <p>Hair, eyes, outfit</p>
+      </article>
+      <article class="mini-card" style="background:color-mix(in oklch, var(--mint), white 48%);">
+        <span class="badge">Safe</span>
+        <strong>Friends</strong>
+        <p>Approved visits only</p>
+      </article>
+    </section>
+    <section class="panel">
+      <h3>Choose a starter world</h3>
+      <div class="preset-row" style="margin-top: 12px;">
+        <button class="preset is-active">Cloud Park</button>
+        <button class="preset">Moon Bakery</button>
+        <button class="preset">Bunny Town</button>
+      </div>
+    </section>
+    <nav class="bottom-nav">
+      <a class="is-active" href="01-onboarding.html">Home</a>
+      <a href="02-avatar.html">Avatar</a>
+      <a href="03-world-builder.html">Build</a>
+      <a href="05-quest-map.html">Quests</a>
+    </nav>
+  </main>
+  <script>
+    // Inline the shared brand logo so the puffy wordmark font renders.
+    fetch("../assets/mina-world-logo.svg")
+      .then((r) => r.text())
+      .then((svg) => document.querySelectorAll("[data-mw-logo]").forEach((el) => { el.innerHTML = svg; }));
+  </script>
+</body>
+</html>

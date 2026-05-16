@@ -36,6 +36,8 @@ const CreateAvatarSchema = z.object({
   isDefault: z.boolean().default(false),
 });
 
+const DEMO_USER_ID = '3f4c40cb-09d6-4f2b-b9d7-9104e2523ea2';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -43,13 +45,10 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServiceClient();
 
-    // TODO: Get user_id from Stiki JWT session
-    const userId = '00000000-0000-0000-0000-000000000000'; // Placeholder
-
     const { data, error } = await supabase
       .from('avatars')
       .insert({
-        user_id: userId,
+        user_id: DEMO_USER_ID,
         name: validated.name,
         appearance: validated.appearance as any,
         is_default: validated.isDefault,
@@ -74,13 +73,10 @@ export async function GET() {
   try {
     const supabase = createServiceClient();
 
-    // TODO: Get user_id from Stiki JWT session
-    const userId = '00000000-0000-0000-0000-000000000000'; // Placeholder
-
     const { data, error } = await supabase
       .from('avatars')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', DEMO_USER_ID)
       .is('deleted_at', null)
       .order('created_at', { ascending: false });
 

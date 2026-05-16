@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mina's World - World Builder</title>
+  <link rel="stylesheet" href="../styles/mina-world.css">
+</head>
+<body class="phone-screen">
+  <div class="ios-status"><span>9:41</span><span>5G 100%</span></div>
+  <main class="app-shell">
+    <nav class="topbar">
+      <span class="avatar-chip">Cloud Plaza</span>
+      <button class="icon-btn" aria-label="Undo last tile">↶</button>
+    </nav>
+    <section class="world-card">
+      <div class="topbar">
+        <div><p class="kicker">Builder</p><h2>Decorate the park</h2></div>
+        <span class="badge">68%</span>
+      </div>
+      <div class="world-grid" id="worldGrid" style="margin-top:14px;">
+        <button class="tile" style="--tile:var(--mint);">🌳</button>
+        <button class="tile" style="--tile:var(--star);">⭐</button>
+        <button class="tile" style="--tile:var(--sky);">🏠</button>
+        <button class="tile" style="--tile:var(--bubble);">🌸</button>
+        <button class="tile">+</button>
+        <button class="tile">+</button>
+        <button class="tile" style="--tile:var(--mint);">🛝</button>
+        <button class="tile">+</button>
+        <button class="tile" style="--tile:var(--sky);">☁</button>
+        <button class="tile">+</button>
+        <button class="tile">+</button>
+        <button class="tile" style="--tile:var(--bubble);">🍰</button>
+        <button class="tile">+</button>
+        <button class="tile" style="--tile:var(--star);">💎</button>
+        <button class="tile">+</button>
+      </div>
+    </section>
+    <section class="panel">
+      <h3>Place a piece</h3>
+      <div class="preset-row" style="margin-top: 12px;">
+        <button class="preset is-active" data-place="🌳">Tree</button>
+        <button class="preset" data-place="🏠">House</button>
+        <button class="preset" data-place="🌸">Flower</button>
+        <button class="preset" data-place="🍰">Cafe</button>
+      </div>
+    </section>
+    <section class="mini-card">
+      <span class="badge">Parent note</span>
+      <p>Worlds are private until a parent approves sharing.</p>
+    </section>
+    <nav class="bottom-nav">
+      <a href="01-onboarding.html">Home</a>
+      <a href="02-avatar.html">Avatar</a>
+      <a class="is-active" href="03-world-builder.html">Build</a>
+      <a href="05-quest-map.html">Quests</a>
+    </nav>
+  </main>
+  <script src="../scripts/mina-world.js"></script>
+</body>
+</html>
