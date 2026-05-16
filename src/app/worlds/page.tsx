@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { useWorldBuilderStore } from '@/store/worldBuilderStore';
 import BottomNav from '@/components/BottomNav';
-import { BIOME_OPTIONS, BUILDING_TYPES, TILESET_COLORS, createDefaultTileMap } from '@/types/world';
+import { BIOME_OPTIONS, TILESET_COLORS } from '@/types/world';
+import ChatPanel from '@/components/ChatPanel';
+import { useRealtimePresence } from '@/hooks/useRealtimePresence';
 
 const PIECES = [
   { emoji: '🌳', label: 'Tree', color: '#10B981' },
@@ -66,6 +68,7 @@ export default function WorldBuilderPage() {
   };
 
   const tiles = currentWorld?.tileMap?.layers.find((l) => l.id === 'ground')?.tiles || [];
+  const { visitors, isConnected } = useRealtimePresence(currentWorld?.id || 'default');
 
   return (
     <div className="phone-screen">
@@ -78,7 +81,12 @@ export default function WorldBuilderPage() {
         {/* Top Bar */}
         <nav className="topbar">
           <span className="avatar-chip">{currentWorld?.name || 'New World'}</span>
-          <div className="button-row">
+          <div className="button-row" style={{ alignItems: 'center', gap: 8 }}>
+            {visitors.length > 0 && (
+              <span className="badge" style={{ fontSize: 11 }}>
+                {visitors.length} visiting
+              </span>
+            )}
             <button className="icon-btn" onClick={() => setShowNewWorld(true)} aria-label="New world">
               +
             </button>
@@ -148,6 +156,8 @@ export default function WorldBuilderPage() {
           <span className="badge">Parent note</span>
           <p style={{ marginTop: 8 }}>Worlds are private until a parent approves sharing.</p>
         </section>
+
+        <ChatPanel />
 
         <BottomNav />
       </main>

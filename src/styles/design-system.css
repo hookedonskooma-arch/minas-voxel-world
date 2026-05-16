@@ -541,8 +541,8 @@ p {
   margin-top: auto;
   min-height: 66px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
   padding: 8px;
   border-radius: 24px;
   background: color-mix(in oklch, white, var(--sky) 10%);
@@ -665,6 +665,50 @@ p {
 
 .snapshot-grid .mini-card {
   min-height: 120px;
+}
+
+/* ================================================================
+   TOUCH & IPAD OPTIMIZATIONS
+   ================================================================ */
+
+/* Prevent double-tap zoom and improve touch response */
+button, a, .tile, .swatch, .preset, .icon-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure minimum touch targets */
+.icon-btn, .tile, .swatch {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.bottom-nav a {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* iPad landscape support */
+@media (min-width: 820px) and (orientation: landscape) {
+  .phone-screen {
+    max-width: 430px;
+    margin: 0 auto;
+    border-radius: 48px;
+    box-shadow: 0 24px 70px color-mix(in oklch, var(--violet), black 25%);
+    border: 12px solid color-mix(in oklch, var(--fg), black 40%);
+  }
+
+  .app-shell {
+    border-radius: 0 0 36px 36px;
+  }
+}
+
+/* Safe area for notched devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .phone-screen {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* ================================================================
