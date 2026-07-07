@@ -22,6 +22,14 @@ export default function HomePage() {
               Build World
             </Link>
           </div>
+          <div className="button-row" style={{ marginTop: 12 }}>
+            <Link href="/play" className="primary-btn" style={{ background: '#00B398', color: '#fff' }}>
+              🎮 Play 3D Voxel World
+            </Link>
+            <Link href="/join" className="secondary-btn">
+              🔑 Join Friend&apos;s World
+            </Link>
+          </div>
         </div>
 
         {/* Screen Gallery */}

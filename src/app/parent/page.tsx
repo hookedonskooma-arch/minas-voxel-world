@@ -1,69 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-
-interface FriendRequest {
-  id: string;
-  childName: string;
-  friendName: string;
-  friendWorld: string;
-  status: 'pending' | 'approved' | 'rejected';
-  requestedAt: string;
-}
-
-interface ActivityEvent {
-  id: string;
-  childName: string;
-  action: string;
-  detail: string;
-  timestamp: string;
-}
-
-const DEMO_REQUESTS: FriendRequest[] = [
-  {
-    id: '1',
-    childName: 'Mina',
-    friendName: 'Lulu',
-    friendWorld: 'Moon Bakery',
-    status: 'pending',
-    requestedAt: 'Today, 2:30 PM',
-  },
-  {
-    id: '2',
-    childName: 'Mina',
-    friendName: 'Bea',
-    friendWorld: 'Bunny Town',
-    status: 'approved',
-    requestedAt: 'Yesterday, 10:15 AM',
-  },
-];
-
-const DEMO_ACTIVITY: ActivityEvent[] = [
-  { id: '1', childName: 'Mina', action: 'Placed object', detail: '🌳 Tree in Cloud Plaza', timestamp: '2 mins ago' },
-  { id: '2', childName: 'Mina', action: 'Visited world', detail: "Lulu's Moon Bakery", timestamp: '15 mins ago' },
-  { id: '3', childName: 'Mina', action: 'Completed quest', detail: 'Cloud Garden — earned Moon Bow', timestamp: '1 hour ago' },
-  { id: '4', childName: 'Mina', action: 'Sent sticker', detail: '❤️ to Lulu', timestamp: '1 hour ago' },
-  { id: '5', childName: 'Mina', action: 'Created world', detail: 'Cloud Plaza (Meadow)', timestamp: '2 hours ago' },
-];
+import { useParentalControls } from '@/lib/voxel/parentalControls';
+import { getIsolationReport, verifyIsolation, getBlockedDomains, type IsolationReport } from '@/lib/voxel/networkGuard';
+import { BlockType, BLOCK_DEFS, MINA_PALETTE, LAB_PALETTE } from '@/lib/voxel/blocks';
 
 export default function ParentDashboardPage() {
-  const [requests, setRequests] = useState(DEMO_REQUESTS);
-  const [playTimer, setPlayTimer] = useState(20);
-  const [chatMode, setChatMode] = useState<'preset' | 'off'>('preset');
-  const [sharing, setSharing] = useState<'friends' | 'private'>('friends');
+  const parental = useParentalControls();
+  const [mounted, setMounted] = useState(false);
+  const [isolationReport, setIsolationReport] = useState<IsolationReport | null>(null);
+  const [verification, setVerification] = useState<{ verified: boolean; message: string } | null>(null);
+  const [blockedDomains] = useState<string[]>([]);
 
-  const handleApprove = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: 'approved' as const } : r))
-    );
-  };
+  // Avoid hydration mismatch — only show client-only state after mount
+  useEffect(() => {
+    setMounted(true);
+    setIsolationReport(getIsolationReport());
+    setVerification(verifyIsolation());
+    // Refresh isolation report every 3 seconds
+    const interval = setInterval(() => {
+      setIsolationReport(getIsolationReport());
+      setVerification(verifyIsolation());
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleReject = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: 'rejected' as const } : r))
-    );
+  const formatTime = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
   };
 
   return (
@@ -79,6 +46,82 @@ export default function ParentDashboardPage() {
           <span className="badge" style={{ fontSize: 14 }}>👤 Parent Dashboard</span>
         </nav>
 
+        {/* Network Isolation Panel */}
+        {mounted && verification && isolationReport ? (
+          <section className="hero-card" style={{ marginBottom: 18, borderColor: verification.verified ? 'var(--safe)' : 'var(--coral)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 20 }}>{verification.verified ? '🔒' : '⚠️'}</span>
+              <p className="kicker">Network Isolation</p>
+            </div>
+            <h2 style={{ color: verification.verified ? 'var(--safe)' : 'var(--coral)' }}>
+              {verification.verified ? 'Verified: No Minecraft Servers' : 'Warning: Isolation Issue'}
+            </h2>
+            <p style={{ fontSize: 13, marginTop: 8, opacity: 0.8 }}>{verification.message}</p>
+
+            {/* Stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginTop: 16 }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 12, textAlign: 'center' }}>
+                <strong style={{ fontSize: 24, color: 'var(--safe)' }}>{isolationReport.totalAttempts}</strong>
+                <p style={{ fontSize: 10, color: 'var(--muted)' }}>Total Requests</p>
+              </div>
+              <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 12, textAlign: 'center' }}>
+                <strong style={{ fontSize: 24, color: 'var(--coral)' }}>{isolationReport.blockedAttempts}</strong>
+                <p style={{ fontSize: 10, color: 'var(--muted)' }}>Blocked</p>
+              </div>
+              <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 12, textAlign: 'center' }}>
+                <strong style={{ fontSize: 24, color: 'var(--accent)' }}>{isolationReport.allowedDomains.length}</strong>
+                <p style={{ fontSize: 10, color: 'var(--muted)' }}>Allowed Domains</p>
+              </div>
+            </div>
+
+            {/* Blocked domains list */}
+            <details style={{ marginTop: 12 }}>
+              <summary style={{ fontSize: 12, cursor: 'pointer', color: 'var(--muted)', fontWeight: 700 }}>
+                Blocked Minecraft/Mojang domains ({blockedDomains.length})
+              </summary>
+              <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {blockedDomains.map((d) => (
+                  <span key={d} style={{
+                    fontSize: 10, padding: '2px 8px', borderRadius: 6,
+                    background: 'color-mix(in oklch, var(--coral), white 85%)',
+                    color: 'var(--coral)', fontWeight: 600,
+                  }}>
+                    🚫 {d}
+                  </span>
+                ))}
+              </div>
+            </details>
+
+            {/* Recent attempts */}
+            {isolationReport.attempts.length > 0 && (
+              <details style={{ marginTop: 12 }}>
+                <summary style={{ fontSize: 12, cursor: 'pointer', color: 'var(--muted)', fontWeight: 700 }}>
+                  Recent network attempts ({isolationReport.attempts.length})
+                </summary>
+                <div style={{ marginTop: 8, maxHeight: 200, overflow: 'auto' }}>
+                  {isolationReport.attempts.slice(0, 10).map((a) => (
+                    <div key={a.id} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '4px 0', fontSize: 11, fontFamily: 'monospace',
+                      borderBottom: '1px solid var(--border)',
+                    }}>
+                      <span style={{ opacity: 0.7 }}>{a.type} → {a.url.slice(0, 50)}</span>
+                      <span style={{ color: a.blocked ? 'var(--coral)' : 'var(--safe)', fontWeight: 700 }}>
+                        {a.blocked ? 'BLOCKED' : 'OK'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+          </section>
+        ) : (
+          <section className="hero-card" style={{ marginBottom: 18 }}>
+            <p className="kicker">Network Isolation</p>
+            <h2>Loading isolation report…</h2>
+          </section>
+        )}
+
         {/* Safety Settings */}
         <section className="hero-card" style={{ marginBottom: 18 }}>
           <p className="kicker">Safety controls</p>
@@ -89,17 +132,66 @@ export default function ParentDashboardPage() {
             <div className="safety-row" style={{ padding: 0 }}>
               <div>
                 <strong>Play timer</strong>
-                <p style={{ fontSize: 13 }}>How long Mina can play per session</p>
+                <p style={{ fontSize: 13 }}>
+                  How long Mina can play per session
+                  {mounted && parental.sessionStatus === 'playing' && (
+                    <span style={{ color: 'var(--accent)', fontWeight: 700 }}> — {formatTime(parental.timeRemainingSec)} left</span>
+                  )}
+                </p>
               </div>
               <div className="preset-row" style={{ gap: 6 }}>
                 {[15, 20, 30, 60].map((min) => (
                   <button
                     key={min}
-                    className={`preset ${playTimer === min ? 'is-active' : ''}`}
-                    onClick={() => setPlayTimer(min)}
+                    className={`preset ${parental.playTimeLimitMin === min ? 'is-active' : ''}`}
+                    onClick={() => parental.setPlayTimeLimit(min)}
                     style={{ fontSize: 12, padding: '0 10px', minHeight: 32 }}
                   >
                     {min}m
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Mode Lock */}
+            <div className="safety-row" style={{ padding: 0 }}>
+              <div>
+                <strong>Mode lock</strong>
+                <p style={{ fontSize: 13 }}>Which game modes Mina can access</p>
+              </div>
+              <div className="preset-row" style={{ gap: 6 }}>
+                {[
+                  { id: 'mina' as const, label: '🌸 Mina only' },
+                  { id: 'any' as const, label: 'Both' },
+                  { id: 'lab' as const, label: '🛠️ Lab only' },
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    className={`preset ${parental.modeLock === m.id ? 'is-active' : ''}`}
+                    onClick={() => parental.setModeLock(m.id)}
+                    style={{ fontSize: 12, padding: '0 10px', minHeight: 32 }}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Render Distance Cap */}
+            <div className="safety-row" style={{ padding: 0 }}>
+              <div>
+                <strong>Render distance cap</strong>
+                <p style={{ fontSize: 13 }}>Max chunks visible (lower = faster on tablets)</p>
+              </div>
+              <div className="preset-row" style={{ gap: 6 }}>
+                {[2, 4, 6, 8].map((r) => (
+                  <button
+                    key={r}
+                    className={`preset ${parental.maxRenderDistance === r ? 'is-active' : ''}`}
+                    onClick={() => parental.setMaxRenderDistance(r)}
+                    style={{ fontSize: 12, padding: '0 10px', minHeight: 32 }}
+                  >
+                    {r} chunks
                   </button>
                 ))}
               </div>
@@ -118,8 +210,8 @@ export default function ParentDashboardPage() {
                 ].map((mode) => (
                   <button
                     key={mode.id}
-                    className={`preset ${chatMode === mode.id ? 'is-active' : ''}`}
-                    onClick={() => setChatMode(mode.id)}
+                    className={`preset ${parental.chatMode === mode.id ? 'is-active' : ''}`}
+                    onClick={() => parental.setChatMode(mode.id)}
                     style={{ fontSize: 12, padding: '0 10px', minHeight: 32 }}
                   >
                     {mode.label}
@@ -141,8 +233,8 @@ export default function ParentDashboardPage() {
                 ].map((mode) => (
                   <button
                     key={mode.id}
-                    className={`preset ${sharing === mode.id ? 'is-active' : ''}`}
-                    onClick={() => setSharing(mode.id)}
+                    className={`preset ${parental.sharingMode === mode.id ? 'is-active' : ''}`}
+                    onClick={() => parental.setSharingMode(mode.id)}
                     style={{ fontSize: 12, padding: '0 10px', minHeight: 32 }}
                   >
                     {mode.label}
@@ -151,16 +243,44 @@ export default function ParentDashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Block restrictions */}
+          <details style={{ marginTop: 16 }}>
+            <summary style={{ fontSize: 12, cursor: 'pointer', color: 'var(--muted)', fontWeight: 700 }}>
+              Block restrictions ({parental.blockedBlocks.length} blocked)
+            </summary>
+            <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {[...MINA_PALETTE, ...LAB_PALETTE].filter((v, i, a) => a.indexOf(v) === i).map((blockId) => {
+                const def = BLOCK_DEFS[blockId];
+                const blocked = parental.blockedBlocks.includes(blockId);
+                return (
+                  <button
+                    key={blockId}
+                    onClick={() => parental.toggleBlockBlock(blockId)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 4,
+                      padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                      background: blocked ? 'color-mix(in oklch, var(--coral), white 80%)' : 'var(--surface)',
+                      color: blocked ? 'var(--coral)' : 'var(--fg)',
+                      border: blocked ? '1px solid var(--coral)' : '1px solid var(--border)',
+                    }}
+                  >
+                    {blocked ? '🚫' : '✅'} {def.emoji} {def.name}
+                  </button>
+                );
+              })}
+            </div>
+          </details>
         </section>
 
         {/* Friend Requests */}
         <section className="panel" style={{ marginBottom: 18 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3>Friend requests</h3>
-            <span className="badge">{requests.filter((r) => r.status === 'pending').length} pending</span>
+            <span className="badge">{parental.friendRequests.filter((r) => r.status === 'pending').length} pending</span>
           </div>
 
-          {requests.map((req) => (
+          {parental.friendRequests.map((req) => (
             <div key={req.id} className="friend-row">
               <span
                 className="friend-face"
@@ -184,14 +304,14 @@ export default function ParentDashboardPage() {
                   <button
                     className="primary-btn"
                     style={{ minHeight: 34, padding: '0 12px', fontSize: 12 }}
-                    onClick={() => handleApprove(req.id)}
+                    onClick={() => parental.approveFriend(req.id)}
                   >
                     Approve
                   </button>
                   <button
                     className="secondary-btn"
                     style={{ minHeight: 34, padding: '0 12px', fontSize: 12 }}
-                    onClick={() => handleReject(req.id)}
+                    onClick={() => parental.rejectFriend(req.id)}
                   >
                     Reject
                   </button>
@@ -207,8 +327,13 @@ export default function ParentDashboardPage() {
 
         {/* Activity Log */}
         <section className="panel">
-          <h3 style={{ marginBottom: 12 }}>Activity log</h3>
-          {DEMO_ACTIVITY.map((event) => (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h3>Activity log</h3>
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+              {mounted ? `Today: ${formatTime(parental.totalPlayTimeTodaySec)}` : 'Today: 0:00'}
+            </span>
+          </div>
+          {parental.activityLog.map((event) => (
             <div key={event.id} className="safety-row" style={{ padding: '8px 0' }}>
               <div>
                 <strong style={{ fontSize: 13 }}>{event.action}</strong>
