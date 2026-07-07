@@ -12,6 +12,7 @@ import { CHUNK_HEIGHT } from '@/lib/voxel/chunk';
 import { useParentalControls } from '@/lib/voxel/parentalControls';
 import { installNetworkGuard } from '@/lib/voxel/networkGuard';
 import { useMultiplayer } from '@/lib/voxel/multiplayer';
+import { saveVoxelWorld, listVoxelWorlds, type SavedVoxelWorld } from '@/lib/voxel/persistence';
 
 export default function VoxelCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,6 +31,8 @@ export default function VoxelCanvas() {
   });
   const [pointerLocked, setPointerLocked] = useState(false);
   const [showHelp, setShowHelp] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [savedWorldId, setSavedWorldId] = useState<string | null>(null);
 
   const { mode, settings, selectedBlock, palette, setMode, setSelectedBlock, toggleFly, toggleDebug, toggleWireframe, setRenderDistance, setTimeOfDay, setGravity } = useVoxelEngine();
   const parental = useParentalControls();
@@ -497,6 +500,35 @@ export default function VoxelCanvas() {
             }}
           >🛠️ Lab</button>
         </div>
+
+        {/* Save button */}
+        <button
+          onClick={async () => {
+            const world = worldRef.current;
+            if (!world) return;
+            setSaveStatus('saving');
+            const engineState = useVoxelEngine.getState();
+            const record = await saveVoxelWorld(world, {
+              name: mode === 'mina' ? "Mina's World" : 'Lab Prototype',
+              ownerName: 'Mina',
+              seed: engineState.worldGen.seed,
+              mode,
+              id: savedWorldId || undefined,
+            });
+            setSavedWorldId(record.id);
+            setSaveStatus('saved');
+            useParentalControls.getState().addActivity('Saved world', `${record.name} (${record.id})`);
+            setTimeout(() => setSaveStatus('idle'), 2000);
+          }}
+          style={{
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            background: saveStatus === 'saved' ? '#00B398' : saveStatus === 'saving' ? '#F2A900' : 'rgba(255,255,255,0.15)',
+            color: saveStatus === 'saved' || saveStatus === 'saving' ? '#fff' : 'rgba(255,255,255,0.6)',
+            border: 'none', transition: 'all 0.2s',
+          }}
+        >
+          {saveStatus === 'saving' ? '💾 Saving…' : saveStatus === 'saved' ? '✅ Saved!' : '💾 Save World'}
+        </button>
 
         {/* Lab controls */}
         {mode === 'lab' && (

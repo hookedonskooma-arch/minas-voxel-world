@@ -356,3 +356,49 @@ INSERT INTO catalog_items (name, item_type, category, rarity, price, metadata) V
   ('Beach Sand', 'tileset', 'ground', 'common', 0, '{"biome": "beach", "tile_type": "ground"}'),
   ('Candy Floor', 'tileset', 'ground', 'rare', 50, '{"biome": "candy", "tile_type": "ground"}'),
   ('Space Tiles', 'tileset', 'ground', 'epic', 100, '{"biome": "space", "tile_type": "ground"}');
+
+-- ============================================
+-- VOXEL WORLD TABLE (3D VoxelCanvas saves)
+-- ============================================
+
+CREATE TABLE voxel_worlds (
+  id TEXT PRIMARY KEY,
+  owner_id UUID REFERENCES users(id),
+  owner_name TEXT NOT NULL DEFAULT 'Mina',
+  name TEXT NOT NULL DEFAULT 'My Voxel World',
+  seed INTEGER NOT NULL DEFAULT 42,
+  mode TEXT NOT NULL DEFAULT 'mina',
+  world_data TEXT NOT NULL DEFAULT '{}',
+  is_public BOOLEAN DEFAULT false,
+  deleted_at TIMESTAMPTZ NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE voxel_worlds ENABLE ROW LEVEL SECURITY;
+
+-- Owner can do everything
+CREATE POLICY voxel_worlds_owner_all ON voxel_worlds
+  FOR ALL USING (
+    owner_id = current_setting('app.current_user_id', true)::UUID
+    OR owner_id IS NULL
+  );
+
+-- Friends can view public worlds
+CREATE POLICY voxel_worlds_friend_view ON voxel_worlds
+  FOR SELECT USING (
+    is_public = true
+    OR owner_id IN (
+      SELECT addressee_id FROM friendships
+      WHERE requester_id = current_setting('app.current_user_id', true)::UUID AND status = 'accepted'
+      UNION
+      SELECT requester_id FROM friendships
+      WHERE addressee_id = current_setting('app.current_user_id', true)::UUID AND status = 'accepted'
+    )
+  );
+
+CREATE INDEX idx_voxel_worlds_owner ON voxel_worlds(owner_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_voxel_worlds_public ON voxel_worlds(is_public) WHERE is_public = true AND deleted_at IS NULL;
+
+CREATE TRIGGER update_voxel_worlds_updated_at BEFORE UPDATE ON voxel_worlds
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
